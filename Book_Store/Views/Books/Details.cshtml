@@ -1,0 +1,70 @@
+﻿@model Book_Store.Models.Book
+
+<div class="container mt-4">
+    <h2 class="mb-4">@Model.Title Details</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <p><strong>Title:</strong> @Model.Title</p>
+            <p><strong>Author:</strong> @Model.Author</p>
+            <p><strong>Count Available:</strong> <span id="bookCount">@Model.Count</span></p>
+        </div>
+        <div class="col-md-4 text-center">
+            <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded shadow-sm" />
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-center gap-3">
+            @if (Model.Count > 0)
+            {
+                <a href="@Url.Action("Loan", "Books", new { id = Model.Id })" class="btn btn-primary btn-custom">Loan Book</a>
+            }
+            else
+            {
+                <span class="text-danger">No copies available for loan</span>
+            }
+            <a href="@Url.Action("Return", "Books", new { id = Model.Id })" class="btn btn-secondary btn-custom">Return Book</a>
+            <a href="@Url.Action("Index", "Books")" class="btn btn-outline-primary btn-custom">Back to Book List</a>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/bookCountHub")
+        .build();
+
+    connection.on("ReceiveBookCountUpdate", function () {
+        fetch('/Books/Details/@Model.Id')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newCount = doc.getElementById('bookCount').innerText;
+                document.getElementById('bookCount').innerText = newCount;
+            });
+    });
+
+    connection.start().catch(function (err) {
+        return console.error(err.toString());
+    });
+</script>

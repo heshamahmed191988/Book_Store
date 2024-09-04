@@ -1,0 +1,70 @@
+﻿@model Book_Store.Models.Book
+
+<div class="container mt-5">
+    <h2 class="mb-4">Add a New Book</h2>
+
+    <form asp-action="Create" enctype="multipart/form-data">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Title" class="form-label"></label>
+                    <input asp-for="Title" class="form-control" required minlength="2" />
+                    <div class="invalid-feedback">
+                        <span asp-validation-for="Title"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Author" class="form-label"></label>
+                    <input asp-for="Author" class="form-control" required minlength="2" />
+                    <div class="invalid-feedback">
+                        <span asp-validation-for="Author"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="Image" class="form-label">Upload Image</label>
+            <input type="file" name="Image" class="form-control" required accept="image/*" />
+            <small class="form-text text-muted">Please upload an image file.</small>
+            <div class="invalid-feedback">
+                <span asp-validation-for="ImageUrl"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Count" class="form-label"></label>
+            <input asp-for="Count" class="form-control" required type="number" min="1" />
+            <div class="invalid-feedback">
+                <span asp-validation-for="Count"></span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg">Add Book</button>
+    </form>
+</div>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function (event) {
+        var titleInput = document.querySelector('input[name="Title"]');
+        var authorInput = document.querySelector('input[name="Author"]');
+        var imageInput = document.querySelector('input[name="Image"]');
+        var countInput = document.querySelector('input[name="Count"]');
+
+        if (!titleInput.value || titleInput.value.length < 2) {
+            alert('Title is required and must be at least 2 characters.');
+            event.preventDefault();
+        } else if (!authorInput.value || authorInput.value.length < 2) {
+            alert('Author is required and must be at least 2 characters.');
+            event.preventDefault();
+        } else if (!imageInput.files.length) {
+            alert('Please upload an image file.');
+            event.preventDefault();
+        } else if (!countInput.value || countInput.value < 1) {
+            alert('Count is required and must be at least 1.');
+            event.preventDefault();
+        }
+    });
+</script>
